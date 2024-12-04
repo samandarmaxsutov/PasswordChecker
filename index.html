@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ro'yxatdan o'tish formasi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label {
+            color: #000000;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 2px solid #4a5cd291;
+        }
+
+        input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .strength {
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        .strength.strong {
+            color: green;
+        }
+
+        .strength.good {
+            color: orange;
+        }
+
+        .strength.bad {
+            color: red;
+        }
+
+        button {
+            text-align: center;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            background-color: rgb(255, 255, 255);
+            color: black;
+            border-radius: 8px;
+            border: 2px solid #04AA6D;
+        }
+
+        .center {
+            margin: auto;
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Ro'yxatdan o'tish</h1>
+    <form id="registerForm">
+        <label for="firstName">Ism:</label>
+        <input type="text" id="firstName" name="firstName" required>
+
+        <label for="lastName">Familiya:</label>
+        <input type="text" id="lastName" name="lastName" required>
+
+        <label for="birthday">Tug'ilgan sana:</label>
+        <input type="date" id="birthday" name="birthday" required>
+
+        <label for="login">Login:</label>
+        <input type="text" id="login" name="login" required>
+
+        <label for="password">Parol:</label>
+        <input type="password" id="password" name="password" required>
+        <div class="strength" id="passwordStrength"></div>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="showPassword">
+            <label for="showPassword">Parolni ko'rsatish</label>
+        </div>
+
+        <div id="passwordError" class="error"></div>
+        <div class="center">
+            <button type="submit">Ro'yxatdan o'tish</button>
+        </div>
+    </form>
+
+    <script>
+        const passwordField = document.getElementById('password');
+        const passwordStrength = document.getElementById('passwordStrength');
+
+        document.getElementById('showPassword').addEventListener('change', function () {
+            passwordField.type = this.checked ? 'text' : 'password';
+        });
+
+        passwordField.addEventListener('input', function () {
+            const value = passwordField.value;
+            const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{8,}$/;
+            const mediumPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+
+            if (strongPasswordRegex.test(value)) {
+                passwordStrength.textContent = 'Strong, ' + value.length;
+                passwordStrength.className = 'strength strong';
+            } else if (mediumPasswordRegex.test(value)) {
+                passwordStrength.textContent = 'Good, ' + value.length;
+                passwordStrength.className = 'strength good';
+            } else if (value.length > 0) {
+                passwordStrength.textContent = 'Bad, ' + value.length;
+                passwordStrength.className = 'strength bad';
+            } else {
+                passwordStrength.textContent = '';
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function (event) {
+            const firstName = document.getElementById('firstName').value.toLowerCase();
+            const lastName = document.getElementById('lastName').value.toLowerCase();
+            const birthday = document.getElementById('birthday').value.replaceAll('-', '').toLowerCase();
+            const password = passwordField.value;
+            const errorDiv = document.getElementById('passwordError');
+
+            let hasError = false;
+            errorDiv.textContent = '';
+            if (password.toLowerCase().includes(firstName) ||
+                password.toLowerCase().includes(lastName) ||
+                password.toLowerCase().includes(birthday)) {
+                errorDiv.textContent = 'Parol ism, familiya yoki tug‘ilgan sanani o‘z ichiga olmasligi kerak.';
+                hasError = true;
+            }
+
+            const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{8,}$/;
+            if (!hasError && !strongPasswordRegex.test(password)) {
+                errorDiv.textContent = 'Parol kamida 8 ta belgidan iborat bo‘lishi, katta va kichik harflar, raqam hamda maxsus belgi o‘z ichiga olishi kerak.';
+                hasError = true;
+            }
+
+            if (hasError) {
+                event.preventDefault();
+                return;
+            }
+
+            alert("Good password! Ro'yxatdan o'tish muvaffaqiyatli!");
+        });
+
+    </script>
+</body>
+
+</html>
